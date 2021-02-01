@@ -1,0 +1,123 @@
+{
+    "archive": {
+        "enable_reconstruct": true,
+        "files": {
+            "input_0.png"          : "Input image",
+            "input_1.png"              : "A-contrario image",
+            "output0.png"        : "First detection",
+            "output1.png"        : "Second detection",
+            "output2.png"        : "Third detection",
+            "stdout.txt": "Output_details"
+    },
+    "params": [
+      "match_ratio",
+      "maxmatches",
+      "affinfo",
+      "rho"
+    ]
+    },
+  "build": {
+    "build1": {
+      "url": "http://dev.ipol.im/~rdguez-mariano/fixed_files/autosimilarities.tar.gz",
+      "construct": "cd autosimilarities && mkdir build && cd build && cmake .. && make",
+      "move": "autosimilarities/build/libautosim.so, autosimilarities/library.py, autosimilarities/AffRANSAC.py, autosimilarities/autosim_byRANSAC.py, autosimilarities/run.sh, autosimilarities/im3_sub.png",
+      "virtualenv": "autosimilarities/requirements.txt"
+    }
+  },
+  "general": {
+    "timeout": 300,
+    "demo_title": "Autosimilarities",
+    "input_description": [
+      ""
+    ],
+    "param_description": [
+      ""
+    ],
+    "requirements": "DEBIAN_STABLE",
+    "xlink_article": ""
+  },
+  "inputs": [
+        {
+            "description": "Query image",
+            "dtype": "3x8i",
+            "ext": ".png",
+            "max_pixels": "1000 * 1000",
+            "max_weight": "1024*1024*10",
+            "required": true,
+            "type": "image"
+        },
+        {
+            "description": "A-contrario image",
+            "dtype": "3x8i",
+            "ext": ".png",
+            "max_pixels": "1000 * 1000",
+            "max_weight": "1024*1024*10",
+            "required": false,
+            "type": "image"
+        }
+  ],
+  "params": [
+        {
+            "id": "match_ratio",
+            "label": "<p align=\"right\">Ratio =</p>",
+            "type": "range",
+            "values": {
+                "default": 0.8,
+                "max": 0.95,
+                "min": 0.05,
+                "step": 0.05
+            }            
+        },
+        {
+            "id": "maxmatches",
+            "label": "<p align=\"right\">Max Number of Matches =</p>",
+            "type": "range",
+            "values": {
+                "default": 5000,
+                "max": 10000,
+                "min": 100,
+                "step": 100
+            }            
+        },
+        {
+            "id": "affinfo",
+            "label": "<center> Consensus for multiple homographies </center>",
+            "type": "selection_radio",
+            "values": {
+                "Generalised RANSAC </br>":"0",
+                "Generalised RANSAC 2pts (based in <a href='https://rdguez-mariano.github.io/pages/locate'>RANSAC 2pts</a>)</br>": "1",
+                "Generalised RANSAC affine (based in <a href='https://rdguez-mariano.github.io/pages/locate'>RANSAC affine</a>)</br>": "2"                
+            },
+            "default_value": "1",
+            "vertical": true
+        },
+        {
+            "id": "rho",
+            "label": "<p align=\"right\"> (as in rho-hyper-descriptors) rho=</p>",
+            "type": "range",
+            "values": {
+                "default": 4,
+                "max": 25,
+                "min": 1,
+                "step": 1
+            }
+        }
+  ],
+  "results": [
+        {
+            "contents": {
+                "First detection": {"img": "output0.png"},
+                "Second detection": {"img": "output1.png"},
+                "Third detection": {"img": "output2.png"}            
+            },
+            "label": "",
+            "type": "gallery"
+        },
+        {
+            "contents": "stdout.txt", 
+            "label": "<br/><b>Program Output:</b><br/>", 
+            "type": "text_file"
+        }
+  ],
+  "run":  "${bin}/run.sh ${virtualenv} ${demoextras} ${bin} $match_ratio $maxmatches $affinfo $rho"
+}
