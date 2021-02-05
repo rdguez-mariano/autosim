@@ -286,7 +286,17 @@ class GroupingStrategy(object):
 
         self.libAS.Bind_KPs(self.obj, xp, yp, octcodep, sizep, anglep, len, desc_dim, descp, am_i_ac)
 
-    def LookForAutoSims(self, img, matchratio):
+    def LookForAutoSims(self, img, matchratio, max_width = np.inf):
+        #percent by which the image is resized
+        scale = max_width/img.shape[1]
+        if scale < 1:
+            #calculate the 50 percent of original dimensions
+            width = int(img.shape[1] * scale)
+            height = int(img.shape[0] * scale)
+            # dsize
+            dsize = (width, height)
+            # resize image
+            img = cv2.resize(img, dsize)
         self.img = img
         gray1= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
         self.h, self.w = gray1.shape[:2]
@@ -480,9 +490,9 @@ class GroupingStrategy(object):
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv,'hq:r:m:i:n:a:l:',['queryimage','rho','matchratio', 'affinfo', 'maxNumMatches','acimage','librarypath'])
+        opts, args = getopt.getopt(argv,'hq:r:m:i:n:a:l:w:',['queryimage','rho','matchratio', 'affinfo', 'maxNumMatches','acimage','librarypath','max_width'])
     except getopt.GetoptError:
-        print('-q <queryimage> -r <rhovalue> -m <matchratio> -i <affinfo> -n <maxNumMatches>')
+        print('-q <queryimage> -r <rhovalue> -m <matchratio> -i <affinfo> -n <maxNumMatches> -w <maxImgWidth>')
         sys.exit(2)
     # default parameters
     img1 = cv2.imread('coca.png')
@@ -492,6 +502,7 @@ def main(argv):
     affinfo = 1
     matchratio = 0.8
     lpath = './build/libautosim.so'
+    maxwidth = np.inf
 
     for opt, arg in opts:
         if opt == '-h':
@@ -511,28 +522,12 @@ def main(argv):
             acpath = arg
         elif opt in ("-l", "--librarypath"):
             lpath = arg
-            
-            
-                     
-      
-
-    # img1 = cv2.imread('build/coca1.png')          # queryImage
-    # img1 = cv2.imread('build/20180322121141_20561BWsym.png')          # queryImage
-    # img1 = cv2.imread('build/20180322121253_18903BWsym.png')          # queryImage
-    # img1 = cv2.imread('build/mur_coca2.png')          # queryImage
-    # img1 = cv2.imread('build/000000.jpg')          # queryImage
-    # img1 = cv2.imread('build/salvo.jpg')          # queryImage
-    # img1 = cv2.imread('build/graf1.png')          # queryImage
-    # img1 = cv2.imread('build/arc1.png')          # queryImage
-    # img1 = cv2.imread('build/adam1.png') 
-    # img1 = cv2.imread('build/notredame_face.png') 
-    # img1 = cv2.imread('build/toulouse1.png') 
-    # img1 = cv2.imread('build/boat1.png') 
-
+        elif opt in ("-w", "--max_width"):
+            maxwidth = int(arg)
 
     gs=GroupingStrategy(lpath, acpath, rho=rho, maxNumMatches=maxNumMatches)
 
-    gs.LookForAutoSims(img1, matchratio)
+    gs.LookForAutoSims(img1, matchratio, max_width=maxwidth)
 
     gs.Analyse()
     gs.PrintGroups()
