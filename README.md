@@ -34,18 +34,19 @@ python fig_prelabeling.py
 Detect best three repeated objects: 
 
 ```bash
-python autosim.py -q coca.png -a im3_sub.png -l "build/libautosim.so" -m 0.8 -n 1000 -i 0 -r 4
+python autosim.py -q coca.png -a im3_sub.png -l "build/libautosim.so" -m 0.8 -n 1000 -i 0 -r 4 -w 800
 ```
 
 Args explanation:
 
-- `-q coca.png`. Image in which to detect repeated objects.
+- `-q coca.png`. Query image in which to detect repeated objects.
 - `-a im3_sub.png.png`. A-contrario image for the [a-contrario matching criterion](https://rdguez-mariano.github.io/pages/hyperdescriptors) compatible with repeated structures. 
 - `-l build/libautosim.so`. Path to the compiled libautosim library.
 - `-m 0.8`. Matching threshold (between 0 and 1) for the a-contrario matching criterion.
 - `-n 1000`. Maximum number of matches to be taken into account.
 - `-i 0`. RANSAC information type: 0 - Typical RANSAC; 1 - [RANSAC 2pts](https://rdguez-mariano.github.io/pages/locate); 2 - [RANSAC affine](https://rdguez-mariano.github.io/pages/locate).
-- `-r 4`. Rho as in [rho-hyperdescriptors](https://rdguez-mariano.github.io/pages/hyperdescriptors). It sets the threshold for considering several spatially close keypoints as a single keypoint. 
+- `-r 4`. Rho as in [rho-hyperdescriptors](https://rdguez-mariano.github.io/pages/hyperdescriptors). It sets the threshold for considering several spatially close keypoints as a single keypoint.
+- `-w 800`. It scales down the query image if its width is greater than 800.
 
 ## Authors
 
